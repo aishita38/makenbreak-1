@@ -11,6 +11,7 @@ import ShareModal from './ShareModal';
 import HistoryPanel from './HistoryPanel';
 import CommentsPanel from './CommentsPanel';
 import './Spreadsheet.css';
+import Logo from './Logo';
 
 const COLUMNS = 26;
 const ROWS = 100;
@@ -758,7 +759,7 @@ const Spreadsheet: React.FC = () => {
             </div>
           )}
           <div className="header">
-            <h2>Cloud Spreadsheet</h2>
+            <Logo />
             <div className="online-users">
               {onlineUsers.map(u => (
                 <span key={u.id} style={{ color: u.color, marginRight: '10px' }}>

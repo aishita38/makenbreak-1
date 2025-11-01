@@ -274,7 +274,6 @@ th {
     -ms-user-select: text;
     user-select: text;
   }
-}
 
 /* Zoom functionality */
 .spreadsheet-container {

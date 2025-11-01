@@ -1,6 +1,6 @@
-# Cloud Spreadsheet App
+# Gridly - Cloud Spreadsheet
 
-A cloud-based spreadsheet web application built with React and Firebase.
+A modern, collaborative spreadsheet application built with React, TypeScript, and Firebase. Gridly provides real-time collaboration, advanced formula support, and a clean, intuitive interface inspired by Google Sheets.
 
 ## Features
 
