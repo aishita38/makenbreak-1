@@ -23,10 +23,20 @@ A modern, collaborative spreadsheet application built with React, TypeScript, an
 
 1. Set up a Firebase project at https://console.firebase.google.com/
 2. Enable Firestore database and Authentication (Anonymous sign-in)
-3. Get your Firebase config and replace in `src/firebase.ts`
+3. **Firebase Configuration**:
+   - Copy `src/firebase.config.example.js` to `src/firebase.config.local.js`
+   - Fill in your actual Firebase project credentials in `firebase.config.local.js`
+   - **Important**: Never commit `firebase.config.local.js` to version control
 4. Run `npm install`
 5. Run `npm start` for development
 6. Run `npm run build` for production
+
+### Firebase Configuration Files
+
+- `src/firebase.config.example.js` - Template with placeholder values (safe to commit)
+- `src/firebase.config.local.js` - Your actual credentials (ignored by git)
+
+The app will automatically use your local configuration file for Firebase connectivity.
 
 ## Deployment
 

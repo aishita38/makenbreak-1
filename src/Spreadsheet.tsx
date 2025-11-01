@@ -12,6 +12,7 @@ import HistoryPanel from './HistoryPanel';
 import CommentsPanel from './CommentsPanel';
 import './Spreadsheet.css';
 import Logo from './Logo';
+import ChartModal from './ChartModal';
 
 const COLUMNS = 26;
 const ROWS = 100;
@@ -166,6 +167,8 @@ const Spreadsheet: React.FC = () => {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; cell: string } | null>(null);
   const [focusedCell, setFocusedCell] = useState<string>('');
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
+  const [selectedRange, setSelectedRange] = useState<{ start: string; end: string } | null>(null);
+  const [isChartModalOpen, setIsChartModalOpen] = useState(false);
   const sheetId = 'default-sheet'; // For now, single sheet
 
   // Check access level from URL parameters
@@ -537,16 +540,57 @@ const Spreadsheet: React.FC = () => {
 
   const getCellKey = (col: number, row: number) => `${columnLabels[col]}${rowLabels[row]}`;
 
-  const handleCellClick = (key: string) => {
+  const isCellInRange = (cellKey: string, start: string, end: string) => {
+    const startCol = start.charCodeAt(0);
+    const startRow = parseInt(start.slice(1));
+    const endCol = end.charCodeAt(0);
+    const endRow = parseInt(end.slice(1));
+    
+    const cellCol = cellKey.charCodeAt(0);
+    const cellRow = parseInt(cellKey.slice(1));
+    
+    const minCol = Math.min(startCol, endCol);
+    const maxCol = Math.max(startCol, endCol);
+    const minRow = Math.min(startRow, endRow);
+    const maxRow = Math.max(startRow, endRow);
+    
+    return cellCol >= minCol && cellCol <= maxCol && cellRow >= minRow && cellRow <= maxRow;
+  };
+
+  const handleCellClick = (key: string, event?: React.MouseEvent) => {
     if (isViewOnly) return; // Prevent interaction in view-only mode
 
-    setSelectedCell(key);
-    setEditingCell(key);
-    setEditValue(data[key]?.value.toString() || '');
-    // Update cursor
-    const col = key.charCodeAt(0) - 65;
-    const row = parseInt(key.slice(1)) - 1;
-    updateCursor(row, col);
+    const isShiftPressed = event?.shiftKey;
+
+    if (isShiftPressed && selectedCell) {
+      // Range selection
+      const start = selectedCell;
+      const end = key;
+      setSelectedRange({ start, end });
+      updateCursorForRange(start, end);
+    } else {
+      // Single cell selection
+      setSelectedCell(key);
+      setSelectedRange(null);
+      setEditingCell(key);
+      setEditValue(data[key]?.value.toString() || '');
+      // Update cursor
+      const col = key.charCodeAt(0) - 65;
+      const row = parseInt(key.slice(1)) - 1;
+      updateCursor(row, col);
+    }
+  };
+
+  const updateCursorForRange = (start: string, end: string) => {
+    // Update visual selection for range
+    const startCol = start.charCodeAt(0) - 65;
+    const startRow = parseInt(start.slice(1)) - 1;
+    const endCol = end.charCodeAt(0) - 65;
+    const endRow = parseInt(end.slice(1)) - 1;
+    
+    // You could add visual range selection here
+    // For now, just update the last cell cursor
+    updateCursor(endRow, endCol);
   };
 
   const handleCellChange = (value: string) => {
@@ -640,6 +684,10 @@ const Spreadsheet: React.FC = () => {
     setIsHistoryPanelOpen(true);
   };
 
+  const handleChart = () => {
+    setIsChartModalOpen(true);
+  };
+
   const handlePreview = (versionData: Record<string, CellData>) => {
     setPreviewData(versionData);
     setIsPreviewing(true);
@@ -669,14 +717,17 @@ const Spreadsheet: React.FC = () => {
     const isFocused = focusedCell === key;
     const hasComments = cellsWithComments.has(key);
 
+    // Check if cell is in selected range
+    const isInRange = selectedRange ? isCellInRange(key, selectedRange.start, selectedRange.end) : false;
+
     // Check for cursors
     const cellCursors = cursors.filter(cursor => cursor.cursor && cursor.cursor.row === row && cursor.cursor.col === col);
 
     return (
       <td
         key={key}
-        className={`cell ${isSelected ? 'selected' : ''} ${isFocused ? 'focused' : ''} ${isViewOnly ? 'view-only' : ''} ${isPreviewing ? 'preview' : ''}`}
-        onClick={() => handleCellClick(key)}
+        className={`cell ${isSelected ? 'selected' : ''} ${isFocused ? 'focused' : ''} ${isViewOnly ? 'view-only' : ''} ${isPreviewing ? 'preview' : ''} ${isInRange ? 'in-range' : ''}`}
+        onClick={(e) => handleCellClick(key, e)}
         onContextMenu={(e) => handleContextMenu(e, key)}
         onMouseEnter={() => handleMouseEnter(key)}
         onMouseLeave={handleMouseLeave}
@@ -768,7 +819,7 @@ const Spreadsheet: React.FC = () => {
               ))}
             </div>
           </div>
-          <Toolbar onImport={handleImportClick} onExportCSV={exportAsCSV} onExportExcel={exportCSV} onUndo={undo} onRedo={redo} onShare={handleShare} onHistory={handleHistory} onComments={handleComments} />
+          <Toolbar onImport={handleImportClick} onExportCSV={exportAsCSV} onExportExcel={exportCSV} onUndo={undo} onRedo={redo} onShare={handleShare} onHistory={handleHistory} onComments={handleComments} onChart={handleChart} hasSelectedRange={!!selectedRange} />
           <table>
             <thead>
               <tr>
@@ -812,6 +863,12 @@ const Spreadsheet: React.FC = () => {
             sheetId={sheetId}
             selectedCell={selectedCommentCell}
             onCellSelect={handleCommentCellSelect}
+          />
+          <ChartModal
+            isOpen={isChartModalOpen}
+            onClose={() => setIsChartModalOpen(false)}
+            data={data}
+            selectedRange={selectedRange || undefined}
           />
         </div>
       </div>

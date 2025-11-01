@@ -12,9 +12,11 @@ interface ToolbarProps {
   onShare: () => void;
   onHistory: () => void;
   onComments: () => void;
+  onChart: () => void;
+  hasSelectedRange?: boolean;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onImport, onExportCSV, onExportExcel, onUndo, onRedo, onShare, onHistory, onComments }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ onImport, onExportCSV, onExportExcel, onUndo, onRedo, onShare, onHistory, onComments, onChart, hasSelectedRange }) => {
   return (
     <div className="toolbar">
       {/* Edit Actions Group */}
@@ -58,6 +60,13 @@ const Toolbar: React.FC<ToolbarProps> = ({ onImport, onExportCSV, onExportExcel,
         <button className="toolbar-btn" onClick={onComments} title="Comments">
           <MessageSquare size={18} />
           <span className="btn-label">Comments</span>
+        </button>
+        <button className="toolbar-btn" onClick={onChart} title="Create chart from selected range">
+          📊
+          <span className="btn-label">
+            Chart
+            {hasSelectedRange && <span className="ml-1 w-2 h-2 bg-green-500 rounded-full inline-block"></span>}
+          </span>
         </button>
       </div>
     </div>

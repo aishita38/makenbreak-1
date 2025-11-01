@@ -1,17 +1,18 @@
 // src/firebase.ts
+// Firebase configuration and initialization
+//
+// This file imports Firebase configuration from firebase.config.local.js
+// which contains your actual Firebase project credentials.
+//
+// To set up:
+// 1. Copy firebase.config.example.js to firebase.config.local.js
+// 2. Fill in your actual Firebase project values
+// 3. Never commit firebase.config.local.js to version control
+
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAYmb3n_Oey294rPxmspU5DtfhVBXTeupI",
-  authDomain: "makenbreak-cd654.firebaseapp.com",
-  projectId: "makenbreak-cd654",
-  storageBucket: "makenbreak-cd654.firebasestorage.app",
-  messagingSenderId: "475976510347",
-  appId: "1:475976510347:web:0dc2281c29b7f65b169d8e",
-  measurementId: "G-NH6NDFPEL6"
-};
+import { firebaseConfig } from './firebase.config.local';
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);

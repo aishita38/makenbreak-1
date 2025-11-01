@@ -61,6 +61,11 @@ th {
   border-color: #ffeaa7;
 }
 
+.cell.in-range {
+  background-color: rgba(37, 99, 235, 0.1) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
 .comment-indicator {
   position: absolute;
   top: 2px;
